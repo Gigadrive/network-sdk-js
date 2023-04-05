@@ -1,0 +1,35 @@
+{
+  "name": "@gigadrive/network-sdk",
+  "version": "1.0.0",
+  "description": "Software development kit for Gigadrive Network APIs",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint --cache \"src/**/*.{js,jsx,ts,tsx}\"",
+    "lint:fix": "eslint --cache --fix \"src/**/*.{js,jsx,ts,tsx}\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Gigadrive/network-sdk-js.git"
+  },
+  "author": "Gigadrive UG",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Gigadrive/network-sdk-js/issues"
+  },
+  "homepage": "https://github.com/Gigadrive/network-sdk-js#readme",
+  "devDependencies": {
+    "@types/node": "^18.15.11",
+    "@typescript-eslint/eslint-plugin": "^5.57.1",
+    "@typescript-eslint/parser": "^5.57.1",
+    "eslint": "^8.37.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-config-standard-with-typescript": "^34.0.1",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-n": "^15.7.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-promise": "^6.1.1",
+    "prettier": "^2.8.7",
+    "typescript": "^5.0.3"
+  }
+}
