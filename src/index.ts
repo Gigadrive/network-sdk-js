@@ -1,3 +1,3 @@
-function test() {
+function testFunction() {
   'yo';
 }
