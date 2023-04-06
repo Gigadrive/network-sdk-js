@@ -2,7 +2,10 @@ import axios, { type AxiosInstance } from 'axios';
 
 /**
  * FastCache is a key-value store that is optimized for speed and low latency by being hosted at the edge.
+ *
  * This client allows you to interact with the FastCache API.
+ *
+ * @see https://docs.gigadrive.network/products/fastcache
  */
 export default class FastCache {
   public readonly apiKey: string;
@@ -32,6 +35,7 @@ export default class FastCache {
    *
    * @param key The key of the FastCache item
    * @returns The FastCache item
+   * @see https://docs.gigadrive.network/products/fastcache#retrieve-an-item
    */
   async get(key: string): Promise<FastCacheItem> {
     const { data } = await this.axios.get(`/fastcache?key=${key}`);
@@ -48,6 +52,7 @@ export default class FastCache {
    * @param value The value of the FastCache item
    * @param expiration The unix timestamp when the item should expire. Set to null to never expire.
    * @returns The FastCache item
+   * @see https://docs.gigadrive.network/products/fastcache#create-an-item
    */
   async set(key: string, value: string, expiration: number | null = null): Promise<FastCacheItem> {
     const { data } = await this.axios.post('/fastcache', {
@@ -65,6 +70,7 @@ export default class FastCache {
    * Required API Key permission: `fastcache:delete`
    *
    * @param key The key of the FastCache item
+   * @see https://docs.gigadrive.network/products/fastcache#delete-an-item
    */
   async delete(key: string): Promise<void> {
     await this.axios.delete(`/fastcache?key=${key}`);
