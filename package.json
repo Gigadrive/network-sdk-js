@@ -1,15 +1,19 @@
 {
   "name": "@gigadrive/network-sdk",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "Software development kit for Gigadrive Network APIs",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "rimraf ./lib && tsc --module commonjs --outDir dist",
     "lint": "eslint --cache \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "eslint --cache --fix \"src/**/*.{js,jsx,ts,tsx}\"",
     "size": "limit-size",
     "test": "jest"
   },
+  "files": [
+    "dist"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Gigadrive/network-sdk-js.git"
