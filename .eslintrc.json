@@ -36,6 +36,6 @@
         "dist",
         "public",
         "jest.config.js",
-        "rollup.config.js",
+        "rollup.config.js"
     ]
 }
