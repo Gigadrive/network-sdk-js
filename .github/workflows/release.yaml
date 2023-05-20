@@ -14,6 +14,12 @@ jobs:
           node-version: 18
       - run: npm ci
       - run: npm run build
-      - uses: JS-DevTools/npm-publish@v1
+      - name: Publish to NPM
+        uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NPM_TOKEN }}
+      - name: Publish to GitHub Packages
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          registry: https://npm.pkg.github.com
