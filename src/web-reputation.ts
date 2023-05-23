@@ -61,10 +61,6 @@ export default class WebReputationAPI {
   async getDomainReputations(domain: string[]): Promise<DomainReputation[]> {
     const { data } = await this.axios.get(`/web-reputation/domain?${buildQueryParamString({ domain })}`);
 
-    if (Array.isArray(data) && data.length === 1) {
-      return data[0];
-    }
-
     return data;
   }
 
