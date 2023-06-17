@@ -15,10 +15,20 @@ describe('FastCache', () => {
 
     const item = await fastcache.get('key');
 
-    expect(item.key).toBe('key');
-    expect(item.value).toBe('value');
-    expect(item.expiration).toBe(1234567890);
-    expect(item.byteSize).toBe(6);
+    expect(item).not.toBeNull();
+
+    expect(item?.key).toBe('key');
+    expect(item?.value).toBe('value');
+    expect(item?.expiration).toBe(1234567890);
+    expect(item?.byteSize).toBe(6);
+  });
+
+  it('should return null if the item does not exist', async () => {
+    mock.onGet('/fastcache?key=key').reply(404);
+
+    const item = await fastcache.get('key');
+
+    expect(item).toBeNull();
   });
 
   it('should be able to set a FastCache item', async () => {

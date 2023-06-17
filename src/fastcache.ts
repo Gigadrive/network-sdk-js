@@ -34,13 +34,21 @@ export default class FastCache {
    * Required API Key permission: `fastcache:read`
    *
    * @param key The key of the FastCache item
-   * @returns The FastCache item
+   * @returns The FastCache item. Returns null if the item does not exist.
    * @see https://docs.gigadrive.network/products/fastcache#retrieve-an-item
    */
-  async get(key: string): Promise<FastCacheItem> {
-    const { data } = await this.axios.get(`/fastcache?key=${key}`);
+  async get(key: string): Promise<FastCacheItem | null> {
+    try {
+      const { data } = await this.axios.get(`/fastcache?key=${key}`);
 
-    return data;
+      return data;
+    } catch (e) {
+      if (e.response.status === 404) {
+        return null;
+      }
+
+      throw e;
+    }
   }
 
   /**
