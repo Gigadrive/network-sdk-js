@@ -63,13 +63,17 @@ export default class FastCache {
    * @see https://docs.gigadrive.network/products/fastcache#create-an-item
    */
   async set(key: string, value: string, expiration: number | null = null): Promise<FastCacheItem> {
-    const { data } = await this.axios.post('/fastcache', {
-      key,
-      value,
-      expiration,
-    });
+    try {
+      const { data } = await this.axios.post('/fastcache', {
+        key,
+        value,
+        expiration,
+      });
 
-    return data;
+      return data;
+    } catch (e) {
+      throw new Error(e.response);
+    }
   }
 
   /**
