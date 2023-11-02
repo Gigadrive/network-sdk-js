@@ -72,7 +72,7 @@ export default class FastCache {
 
       return data;
     } catch (e) {
-      throw new Error(e.response);
+      throw new Error(JSON.stringify(e.response.data));
     }
   }
 
