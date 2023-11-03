@@ -43,7 +43,7 @@ export default class FastCache {
 
       return data;
     } catch (e) {
-      if (e.response.status === 404) {
+      if (e.response?.status === 404) {
         return null;
       }
 
@@ -72,7 +72,11 @@ export default class FastCache {
 
       return data;
     } catch (e) {
-      throw new Error(JSON.stringify(e.response.data));
+      if (e.response !== undefined) {
+        throw new Error(JSON.stringify(e.response?.data));
+      } else {
+        throw e;
+      }
     }
   }
 
