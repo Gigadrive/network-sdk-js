@@ -6,6 +6,12 @@ export class HttpClient {
   }
 
   protected async request<T>(path: string, method: HttpMethod, options: BaseRequestOptions = {}): Promise<T> {
+    if (options.query != null) {
+      const query = this.parseQuery(options.query);
+      const delimiter = path.includes('?') ? '&' : '?';
+      path += delimiter + query.toString();
+    }
+
     const url = `${this.baseUrl}${path}`;
     const headers = new Headers(options.headers);
 
@@ -31,15 +37,10 @@ export class HttpClient {
     try {
       return await this.request<T>(path, method, options);
     } catch (e) {
-      const notFoundTexts = [
-        'Not Found',
-        'Not found',
-        'not found',
-        'not Found',
-        'The requested resource was not found.',
-      ] as const;
-
-      if (notFoundTexts.some((text) => e.message === "Encountered errors: '" + text + "'")) {
+      if (
+        (e.response != null && e.response.status === 404) ||
+        (e.response != null && typeof e.response.status === 'undefined' && e.response.ok === false) // response status is not available in tests
+      ) {
         return null;
       }
 
@@ -56,7 +57,7 @@ export class HttpClient {
     return await this.request<T>(path, 'POST', { ...options, body: JSON.stringify(data) });
   }
 
-  async handleError(response: Response): Promise<void> {
+  private async handleError(response: Response): Promise<void> {
     const responseText = await response.text();
 
     let errorMessage = `Request failed with status code ${response.status} and response text '${response.statusText}'`;
@@ -77,7 +78,37 @@ export class HttpClient {
     } catch (e) {}
 
     // if not, throw generic error
-    throw new Error(errorMessage);
+    throw new HttpClientError(errorMessage, response);
+  }
+
+  private parseQuery(query: QueryParameters): URLSearchParams {
+    if (typeof query === 'string') {
+      return new URLSearchParams(query);
+    }
+
+    if (Array.isArray(query)) {
+      return new URLSearchParams(query);
+    }
+
+    if (query instanceof URLSearchParams) {
+      return query;
+    }
+
+    if (typeof query === 'object' && query != null) {
+      const convertedParams: string[][] = [];
+
+      for (const [key, value] of Object.entries(query)) {
+        if (value == null) {
+          continue;
+        }
+
+        convertedParams.push([key, value.toString()]);
+      }
+
+      return new URLSearchParams(convertedParams);
+    }
+
+    return new URLSearchParams();
   }
 
   protected fetchApiKey(): string | null {
@@ -95,8 +126,25 @@ export class HttpClient {
   }
 }
 
+export class HttpClientError extends Error {
+  public readonly response: Response;
+
+  constructor(message: string, response: Response) {
+    super(message);
+    this.response = response;
+  }
+}
+
 export interface BaseRequestOptions extends Omit<RequestInit, 'method'> {
   apiKey?: string;
+  query?: QueryParameters;
 }
+
+export type QueryParameters =
+  | string
+  | string[][]
+  | Record<string, string | number | boolean | null | undefined>
+  | URLSearchParams
+  | undefined;
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'HEAD' | 'OPTIONS';
