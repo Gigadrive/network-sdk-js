@@ -47,6 +47,15 @@ export class HttpClient {
     }
   }
 
+  protected async post<T>(path: string, data: unknown, options: BaseRequestOptions = {}): Promise<T> {
+    const headers = new Headers(options.headers);
+    headers.append('Content-Type', 'application/json');
+
+    options.headers = headers;
+
+    return await this.request<T>(path, 'POST', { ...options, body: JSON.stringify(data) });
+  }
+
   async handleError(response: Response): Promise<void> {
     const responseText = await response.text();
 
