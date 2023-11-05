@@ -3,6 +3,7 @@ export function mockFetch(result: unknown = undefined, ok: boolean = true) {
     ok,
     json: () => result,
     text: () => JSON.stringify(result),
+    headers: new Headers({ 'Content-Type': 'application/json' }),
   });
 }
 

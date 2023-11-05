@@ -26,7 +26,11 @@ export class HttpClient {
       await this.handleError(response);
     }
 
-    return (await response.json()) as T;
+    if (response.headers?.get('Content-Type')?.startsWith('application/json') === true) {
+      return await response.json();
+    }
+
+    return (await response.text()) as unknown as T;
   }
 
   protected async requestNullable<T>(
