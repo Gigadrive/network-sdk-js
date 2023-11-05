@@ -17,6 +17,7 @@
   "exports": {
     "./client": "./dist/client/index.js",
     "./fastcache": "./dist/modules/fastcache/index.js",
+    "./fastcache/document": "./dist/modules/fastcache/document.js",
     "./mcskinhistory": "./dist/modules/mcskinhistory/index.js",
     "./vat": "./dist/modules/vat/index.js",
     "./web-reputation": "./dist/modules/web-reputation/index.js",

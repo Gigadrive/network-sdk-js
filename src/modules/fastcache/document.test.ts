@@ -1,23 +1,30 @@
 import { mockFetch, mockFetchError } from '../../tests/mock';
-import fastcache from './index';
+import fastcache from './document';
 
-describe('FastCache', () => {
+describe('FastCache Document Client', () => {
+  interface ValueType {
+    foo: string;
+    bar: number;
+  }
+
+  const value = {
+    foo: 'foo',
+    bar: 123,
+  };
+
   it('should be able to get a FastCache item', async () => {
     mockFetch({
       key: 'key',
-      value: 'value',
+      value: JSON.stringify(value),
       expiration: 1234567890,
       byteSize: 6,
     });
 
-    const item = await fastcache.get('key');
+    const item: ValueType | null = await fastcache.get<ValueType>('key');
 
     expect(item).not.toBeNull();
 
-    expect(item?.key).toBe('key');
-    expect(item?.value).toBe('value');
-    expect(item?.expiration).toBe(1234567890);
-    expect(item?.byteSize).toBe(6);
+    expect(item).toStrictEqual(value);
   });
 
   it('should return null if the item does not exist', async () => {
@@ -36,12 +43,10 @@ describe('FastCache', () => {
       byteSize: 6,
     });
 
-    const item = await fastcache.set('key', 'value', { expiration: 1234567890 });
+    await fastcache.set('key', value, { expiration: 1234567890 });
 
-    expect(item.key).toBe('key');
-    expect(item.value).toBe('value');
-    expect(item.expiration).toBe(1234567890);
-    expect(item.byteSize).toBe(6);
+    // expect no error
+    expect(true).toBe(true);
   });
 
   it('should be able to delete a FastCache item', async () => {
