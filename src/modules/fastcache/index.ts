@@ -55,7 +55,7 @@ export class FastCacheClient extends HttpClient {
    * @see https://docs.gigadrive.network/products/fastcache#delete-an-item
    */
   async delete(key: string, options: BaseRequestOptions = {}): Promise<void> {
-    await this.request(`/fastcache?key=${key}`, 'DELETE', options);
+    await super.delete(`/fastcache?key=${key}`, options);
   }
 }
 

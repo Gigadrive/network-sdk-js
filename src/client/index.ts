@@ -61,6 +61,28 @@ export class HttpClient {
     return await this.request<T>(path, 'POST', { ...options, body: JSON.stringify(data) });
   }
 
+  protected async put<T>(path: string, data: unknown, options: BaseRequestOptions = {}): Promise<T> {
+    const headers = new Headers(options.headers);
+    headers.append('Content-Type', 'application/json');
+
+    options.headers = headers;
+
+    return await this.request<T>(path, 'PUT', { ...options, body: JSON.stringify(data) });
+  }
+
+  protected async patch<T>(path: string, data: unknown, options: BaseRequestOptions = {}): Promise<T> {
+    const headers = new Headers(options.headers);
+    headers.append('Content-Type', 'application/json');
+
+    options.headers = headers;
+
+    return await this.request<T>(path, 'PATCH', { ...options, body: JSON.stringify(data) });
+  }
+
+  protected async delete(path: string, options: BaseRequestOptions = {}): Promise<void> {
+    await this.request(path, 'DELETE', { ...options });
+  }
+
   private async handleError(response: Response): Promise<void> {
     const responseText = await response.text();
 
@@ -103,6 +125,14 @@ export class HttpClient {
 
       for (const [key, value] of Object.entries(query)) {
         if (value == null) {
+          continue;
+        }
+
+        if (Array.isArray(value)) {
+          for (const item of value) {
+            convertedParams.push([key, item.toString()]);
+          }
+
           continue;
         }
 
