@@ -1,4 +1,4 @@
-import axios, { type AxiosInstance } from 'axios';
+import { type BaseRequestOptions, HttpClient } from '../../client';
 
 /**
  * MCSkinHistory is a service that allows you to access the largest set of Minecraft-related data and information to boost your app.
@@ -7,22 +7,12 @@ import axios, { type AxiosInstance } from 'axios';
  *
  * @see https://docs.gigadrive.network/products/mcskinhistory
  */
-export default class MCSkinHistory {
-  public readonly apiKey: string;
-  public readonly baseURL: string;
-  public readonly axios: AxiosInstance;
-
+export class MCSkinHistoryClient extends HttpClient {
   /**
-   * @param apiKey The API key to use for authentication.
    * @param baseURL The base URL of the API. Defaults to `https://api.gigadrive.network`.
    */
-  constructor(apiKey: string, baseURL: string = 'https://api.gigadrive.network') {
-    this.apiKey = apiKey;
-    this.baseURL = baseURL;
-
-    this.axios = axios.create({
-      baseURL: this.baseURL,
-    });
+  constructor(baseURL: string = 'https://api.gigadrive.network') {
+    super(baseURL);
   }
 
   /**
@@ -30,23 +20,16 @@ export default class MCSkinHistory {
    *
    * Required API Key permission: `mcskinhistory:player:get`
    *
+   * @param query The player's UUID or username
+   * @param options The request options
    * @returns The player's profile data, or `null` if the player could not be found
    * @see https://docs.gigadrive.network/products/mcskinhistory#retrieve-a-player-profile
    */
-  async getPlayerProfile(options: { query: string }): Promise<PlayerProfile | null> {
-    try {
-      const { data } = await this.axios.get('/mcskinhistory/player', {
-        params: { id: options.query },
-      });
-
-      return data;
-    } catch (e) {
-      if (e.response.status === 404) {
-        return null;
-      }
-
-      throw e;
-    }
+  async getPlayerProfile(query: string, options: BaseRequestOptions = {}): Promise<PlayerProfile | null> {
+    return await this.requestNullable(`/mcskinhistory/player`, 'GET', {
+      query: { id: query },
+      ...options,
+    });
   }
 
   /**
@@ -54,23 +37,16 @@ export default class MCSkinHistory {
    *
    * Required API Key permission: `mcskinhistory:player-names:get`
    *
+   * @param query The player's UUID or username
+   * @param options The request options
    * @returns The player's name history, or `null` if the player could not be found
    * @see https://docs.gigadrive.network/products/mcskinhistory#retrieve-name-history
    */
-  async getPlayerNames(options: { query: string }): Promise<Name[] | null> {
-    try {
-      const { data } = await this.axios.get('/mcskinhistory/player/names', {
-        params: { id: options.query },
-      });
-
-      return data;
-    } catch (e) {
-      if (e.response.status === 404) {
-        return null;
-      }
-
-      throw e;
-    }
+  async getPlayerNames(query: string, options: BaseRequestOptions = {}): Promise<Name[] | null> {
+    return await this.requestNullable(`/mcskinhistory/player/names`, 'GET', {
+      query: { id: query },
+      ...options,
+    });
   }
 
   /**
@@ -78,23 +54,16 @@ export default class MCSkinHistory {
    *
    * Required API Key permission: `mcskinhistory:player-skins:get`
    *
+   * @param query The player's UUID or username
+   * @param options The request options
    * @returns The player's MCSkinHistory textures containing skins, or `null` if the player could not be found
    * @see https://docs.gigadrive.network/products/mcskinhistory#retrieve-player-skins
    */
-  async getPlayerSkins(options: { query: string }): Promise<SkinTexture[] | null> {
-    try {
-      const { data } = await this.axios.get('/mcskinhistory/player/skins', {
-        params: { id: options.query },
-      });
-
-      return data;
-    } catch (e) {
-      if (e.response.status === 404) {
-        return null;
-      }
-
-      throw e;
-    }
+  async getPlayerSkins(query: string, options: BaseRequestOptions = {}): Promise<SkinTexture[] | null> {
+    return await this.requestNullable(`/mcskinhistory/player/skins`, 'GET', {
+      query: { id: query },
+      ...options,
+    });
   }
 
   /**
@@ -102,23 +71,16 @@ export default class MCSkinHistory {
    *
    * Required API Key permission: `mcskinhistory:player-mojang-capes:get`
    *
+   * @param query The player's UUID or username
+   * @param options The request options
    * @returns The player's MCSkinHistory textures containing capes, or `null` if the player could not be found
    * @see https://docs.gigadrive.network/products/mcskinhistory#retrieve-player-mojang-capes
    */
-  async getPlayerMojangCapes(options: { query: string }): Promise<CapeTexture[] | null> {
-    try {
-      const { data } = await this.axios.get('/mcskinhistory/player/mojang-capes', {
-        params: { id: options.query },
-      });
-
-      return data;
-    } catch (e) {
-      if (e.response.status === 404) {
-        return null;
-      }
-
-      throw e;
-    }
+  async getPlayerMojangCapes(query: string, options: BaseRequestOptions = {}): Promise<CapeTexture[] | null> {
+    return await this.requestNullable(`/mcskinhistory/player/mojang-capes`, 'GET', {
+      query: { id: query },
+      ...options,
+    });
   }
 
   /**
@@ -126,23 +88,16 @@ export default class MCSkinHistory {
    *
    * Required API Key permission: `mcskinhistory:player-optifine-capes:get`
    *
+   * @param query The player's UUID or username
+   * @param options The request options
    * @returns The player's MCSkinHistory textures containing capes, or `null` if the player could not be found
    * @see https://docs.gigadrive.network/products/mcskinhistory#retrieve-player-optifine-capes
    */
-  async getPlayerOptifineCapes(options: { query: string }): Promise<CapeTexture[] | null> {
-    try {
-      const { data } = await this.axios.get('/mcskinhistory/player/optifine-capes', {
-        params: { id: options.query },
-      });
-
-      return data;
-    } catch (e) {
-      if (e.response.status === 404) {
-        return null;
-      }
-
-      throw e;
-    }
+  async getPlayerOptifineCapes(query: string, options: BaseRequestOptions = {}): Promise<CapeTexture[] | null> {
+    return await this.requestNullable(`/mcskinhistory/player/optifine-capes`, 'GET', {
+      query: { id: query },
+      ...options,
+    });
   }
 
   /**
@@ -150,23 +105,16 @@ export default class MCSkinHistory {
    *
    * Required API Key permission: `mcskinhistory:player-custom-capes:get`
    *
+   * @param query The player's UUID or username
+   * @param options The request options
    * @returns The player's MCSkinHistory textures containing capes, or `null` if the player could not be found
    * @see https://docs.gigadrive.network/products/mcskinhistory#retrieve-player-custom-capes
    */
-  async getPlayerCustomCapes(options: { query: string }): Promise<CapeTexture[] | null> {
-    try {
-      const { data } = await this.axios.get('/mcskinhistory/player/custom-capes', {
-        params: { id: options.query },
-      });
-
-      return data;
-    } catch (e) {
-      if (e.response.status === 404) {
-        return null;
-      }
-
-      throw e;
-    }
+  async getPlayerCustomCapes(query: string, options: BaseRequestOptions = {}): Promise<CapeTexture[] | null> {
+    return await this.requestNullable(`/mcskinhistory/player/custom-capes`, 'GET', {
+      query: { id: query },
+      ...options,
+    });
   }
 
   /**
@@ -174,23 +122,16 @@ export default class MCSkinHistory {
    *
    * Required API Key permission: `mcskinhistory:server:get`
    *
+   * @param ip The server's IP address or domain
+   * @param options The request options
    * @returns The server's profile data, or `null` if the server could not be found
    * @see https://docs.gigadrive.network/products/mcskinhistory#retrieve-server-information
    */
-  async getServerProfile(options: { ip: string }): Promise<ServerProfile | null> {
-    try {
-      const { data } = await this.axios.get('/mcskinhistory/server', {
-        params: { ip: options.ip },
-      });
-
-      return data;
-    } catch (e) {
-      if (e.response.status === 404) {
-        return null;
-      }
-
-      throw e;
-    }
+  async getServerProfile(ip: string, options: BaseRequestOptions = {}): Promise<ServerProfile | null> {
+    return await this.requestNullable(`/mcskinhistory/server`, 'GET', {
+      query: { ip },
+      ...options,
+    });
   }
 
   /**
@@ -198,15 +139,13 @@ export default class MCSkinHistory {
    *
    * Required API Key permission: `mcskinhistory:server-player-history:get`
    *
-   * @param options.ip The server's IP address or domain
-   * @param options.rangeStart The start of the range to retrieve data for. Defaults to 24 hours ago.
-   * @param options.rangeEnd The end of the range to retrieve data for. Defaults to now.
+   * @param ip The server's IP address or domain
+   * @param options The request options
    */
-  async getServerPlayerHistory(options: {
-    ip: string;
-    rangeStart?: Date | number | string;
-    rangeEnd?: Date | number | string;
-  }): Promise<ServerPlayerHistoryEntry[]> {
+  async getServerPlayerHistory(
+    ip: string,
+    options: ServerPlayHistoryRequestOptions = {}
+  ): Promise<ServerPlayerHistoryEntry[]> {
     // convert dates to ISO strings
     if (options.rangeStart instanceof Date) {
       options.rangeStart = options.rangeStart.toISOString();
@@ -220,30 +159,51 @@ export default class MCSkinHistory {
       options.rangeEnd = new Date(options.rangeEnd).toISOString();
     }
 
-    const { data } = await this.axios.get('/mcskinhistory/server/player-history', {
-      params: {
-        ip: options.ip,
+    return await this.request('/mcskinhistory/server/player-history', 'GET', {
+      query: {
+        ip,
         rangeStart: options.rangeStart,
         rangeEnd: options.rangeEnd,
       },
+      ...options,
     });
-
-    return data;
   }
 
   /**
    * Retrieve a list of skins from MCSkinHistory.
    *
-   * @param options.sort Whether to fetch the newest or most popular skins
-   * @param options.limit The maximum amount of skins to retrieve
+   * @param options The request options
    */
-  async getSkinList(options: { sort?: 'new' | 'popular'; limit?: number }): Promise<SkinFile[]> {
-    const { data } = await this.axios.get('/mcskinhistory/skins', {
-      params: { sort: options.sort ?? 'new', limit: options.limit ?? 25 },
+  async getSkinList(options: SkinListRequestOptions = {}): Promise<SkinFile[]> {
+    return await this.request('/mcskinhistory/skins', 'GET', {
+      query: { sort: options.sort ?? 'new', limit: options.limit ?? 25 },
+      ...options,
     });
-
-    return data;
   }
+}
+
+interface ServerPlayHistoryRequestOptions extends BaseRequestOptions {
+  /**
+   * The start of the range to retrieve data for. Defaults to 24 hours ago.
+   */
+  rangeStart?: Date | number | string;
+
+  /**
+   * The end of the range to retrieve data for. Defaults to now.
+   */
+  rangeEnd?: Date | number | string;
+}
+
+interface SkinListRequestOptions extends BaseRequestOptions {
+  /**
+   * Whether to fetch the newest or most popular skins
+   */
+  sort?: 'new' | 'popular';
+
+  /**
+   * The maximum amount of skins to retrieve
+   */
+  limit?: number;
 }
 
 export interface ServerProfile {
@@ -399,3 +359,5 @@ export interface CapeFile extends BaseSkinFile {
 }
 
 export type SkinFileType = 'SKIN' | 'CAPE_MOJANG' | 'CAPE_OPTIFINE' | 'CAPE_LABYMOD';
+
+export default new MCSkinHistoryClient();

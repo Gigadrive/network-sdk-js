@@ -1,4 +1,4 @@
-import axios, { type AxiosInstance } from 'axios';
+import { type BaseRequestOptions, HttpClient } from '../../client';
 
 /**
  * FastCache is a key-value store that is optimized for speed and low latency by being hosted at the edge.
@@ -7,25 +7,12 @@ import axios, { type AxiosInstance } from 'axios';
  *
  * @see https://docs.gigadrive.network/products/fastcache
  */
-export default class FastCache {
-  public readonly apiKey: string;
-  public readonly baseURL: string;
-  public readonly axios: AxiosInstance;
-
+export class FastCacheClient extends HttpClient {
   /**
-   * @param apiKey The API key to use for authentication.
    * @param baseURL The base URL of the API. Defaults to `https://api.gigadrive.network`.
    */
-  constructor(apiKey: string, baseURL: string = 'https://api.gigadrive.network') {
-    this.apiKey = apiKey;
-    this.baseURL = baseURL;
-
-    this.axios = axios.create({
-      baseURL: this.baseURL,
-      headers: {
-        Authorization: `Bearer ${this.apiKey}`,
-      },
-    });
+  constructor(baseURL: string = 'https://api.gigadrive.network') {
+    super(baseURL);
   }
 
   /**
@@ -34,21 +21,12 @@ export default class FastCache {
    * Required API Key permission: `fastcache:read`
    *
    * @param key The key of the FastCache item
+   * @param options The request options
    * @returns The FastCache item. Returns null if the item does not exist.
    * @see https://docs.gigadrive.network/products/fastcache#retrieve-an-item
    */
-  async get(key: string): Promise<FastCacheItem | null> {
-    try {
-      const { data } = await this.axios.get(`/fastcache?key=${key}`);
-
-      return data;
-    } catch (e) {
-      if (e.response?.status === 404) {
-        return null;
-      }
-
-      throw e;
-    }
+  async get(key: string, options: BaseRequestOptions = {}): Promise<FastCacheItem | null> {
+    return await this.requestNullable(`/fastcache?key=${key}`, 'GET', options);
   }
 
   /**
@@ -58,26 +36,13 @@ export default class FastCache {
    *
    * @param key The key of the FastCache item
    * @param value The value of the FastCache item
-   * @param expiration The unix timestamp when the item should expire. Set to null to never expire.
+   * @param options The request options
+   * @param options.expiration The unix timestamp when the item should expire. Set to null to never expire.
    * @returns The FastCache item
    * @see https://docs.gigadrive.network/products/fastcache#create-an-item
    */
-  async set(key: string, value: string, expiration: number | null = null): Promise<FastCacheItem> {
-    try {
-      const { data } = await this.axios.post('/fastcache', {
-        key,
-        value,
-        expiration,
-      });
-
-      return data;
-    } catch (e) {
-      if (e.response !== undefined) {
-        throw new Error(JSON.stringify(e.response?.data));
-      } else {
-        throw e;
-      }
-    }
+  async set(key: string, value: string, options: FastCacheSetRequestOptions = {}): Promise<FastCacheItem> {
+    return await this.post('/fastcache', { key, value, expiration: options.expiration }, options);
   }
 
   /**
@@ -86,11 +51,21 @@ export default class FastCache {
    * Required API Key permission: `fastcache:delete`
    *
    * @param key The key of the FastCache item
+   * @param options The request options
    * @see https://docs.gigadrive.network/products/fastcache#delete-an-item
    */
-  async delete(key: string): Promise<void> {
-    await this.axios.delete(`/fastcache?key=${key}`);
+  async delete(key: string, options: BaseRequestOptions = {}): Promise<void> {
+    await super.delete(`/fastcache?key=${key}`, options);
   }
+}
+
+export default new FastCacheClient();
+
+export interface FastCacheSetRequestOptions extends BaseRequestOptions {
+  /**
+   * The unix timestamp when the item should expire. Set to null to never expire.
+   */
+  expiration?: number;
 }
 
 /**

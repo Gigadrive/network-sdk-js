@@ -1,12 +1,9 @@
-import MockAdapter from 'axios-mock-adapter';
-import WhoisAPI from './whois';
+import { mockFetch } from '../../tests/mock';
+import whois from './index';
 
 describe('Whois API', () => {
-  const whois: WhoisAPI = new WhoisAPI('API_KEY');
-  const mock = new MockAdapter(whois.axios);
-
   it('should be able to get domain information', async () => {
-    mock.onGet('/whois/domain', { params: { domain: 'gigadrivegroup.com' } }).reply(200, {
+    mockFetch({
       domain: {
         name: 'gigadrive.network',
         id: '97291d85ce3e4010b12489421505c3ca-DONUTS',

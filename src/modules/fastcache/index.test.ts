@@ -1,12 +1,9 @@
-import FastCache from './fastcache';
-import MockAdapter from 'axios-mock-adapter';
+import { mockFetch, mockFetchError } from '../../tests/mock';
+import fastcache from './index';
 
 describe('FastCache', () => {
-  const fastcache: FastCache = new FastCache('API_KEY');
-  const mock = new MockAdapter(fastcache.axios);
-
   it('should be able to get a FastCache item', async () => {
-    mock.onGet('/fastcache?key=key').reply(200, {
+    mockFetch({
       key: 'key',
       value: 'value',
       expiration: 1234567890,
@@ -24,7 +21,7 @@ describe('FastCache', () => {
   });
 
   it('should return null if the item does not exist', async () => {
-    mock.onGet('/fastcache?key=key').reply(404);
+    mockFetchError('Not found');
 
     const item = await fastcache.get('key');
 
@@ -32,14 +29,14 @@ describe('FastCache', () => {
   });
 
   it('should be able to set a FastCache item', async () => {
-    mock.onPost('/fastcache').reply(200, {
+    mockFetch({
       key: 'key',
       value: 'value',
       expiration: 1234567890,
       byteSize: 6,
     });
 
-    const item = await fastcache.set('key', 'value', 1234567890);
+    const item = await fastcache.set('key', 'value', { expiration: 1234567890 });
 
     expect(item.key).toBe('key');
     expect(item.value).toBe('value');
@@ -48,7 +45,7 @@ describe('FastCache', () => {
   });
 
   it('should be able to delete a FastCache item', async () => {
-    mock.onDelete('/fastcache?key=key').reply(204);
+    mockFetch();
 
     await fastcache.delete('key');
   });

@@ -1,5 +1,4 @@
-import axios, { type AxiosInstance } from 'axios';
-import { buildQueryParamString } from './util/url';
+import { type BaseRequestOptions, HttpClient } from '../../client';
 
 /**
  * Gigadrive Network's VAT API allows you to validate VAT IDs and retrieve current VAT rates for EU countries.
@@ -8,22 +7,12 @@ import { buildQueryParamString } from './util/url';
  *
  * @see https://docs.gigadrive.network/products/vat-api
  */
-export default class VATAPI {
-  public readonly apiKey: string;
-  public readonly baseURL: string;
-  public readonly axios: AxiosInstance;
-
+export class VATAPIClient extends HttpClient {
   /**
-   * @param apiKey The API key to use for authentication.
    * @param baseURL The base URL of the API. Defaults to `https://api.gigadrive.network`.
    */
-  constructor(apiKey: string, baseURL: string = 'https://api.gigadrive.network') {
-    this.apiKey = apiKey;
-    this.baseURL = baseURL;
-
-    this.axios = axios.create({
-      baseURL: this.baseURL,
-    });
+  constructor(baseURL: string = 'https://api.gigadrive.network') {
+    super(baseURL);
   }
 
   /**
@@ -32,10 +21,16 @@ export default class VATAPI {
    * Required API Key permission: `vat:id:get`
    *
    * @param id The VAT ID to retrieve information about
+   * @param options The request options
    * @returns The information about the VAT ID
    */
-  async getIdInformation(id: string): Promise<VATIDInformation> {
-    const { data } = await this.axios.get(`/vat/id?${buildQueryParamString({ id })}`);
+  async getIdInformation(id: string, options: BaseRequestOptions = {}): Promise<VATIDInformation> {
+    const data = await this.request<VATIDInformation[]>(`/vat/id`, 'GET', {
+      query: {
+        id,
+      },
+      ...options,
+    });
 
     return data[0];
   }
@@ -46,12 +41,16 @@ export default class VATAPI {
    * Required API Key permission: `vat:id:get`
    *
    * @param id The VAT IDs to retrieve information about
+   * @param options The request options
    * @returns The information about the VAT IDs
    */
-  async getIdInformations(id: string[]): Promise<VATIDInformation[]> {
-    const { data } = await this.axios.get(`/vat/id?${buildQueryParamString({ id })}`);
-
-    return data;
+  async getIdInformations(id: string[], options: BaseRequestOptions = {}): Promise<VATIDInformation[]> {
+    return await this.request<VATIDInformation[]>(`/vat/id`, 'GET', {
+      query: {
+        id,
+      },
+      ...options,
+    });
   }
 
   /**
@@ -59,12 +58,11 @@ export default class VATAPI {
    *
    * Required API Key permission: `vat:rates:get`
    *
+   * @param options The request options
    * @returns The current VAT rates for all EU countries.
    */
-  async getRates(): Promise<Record<string, VATCountryRate[]>> {
-    const { data } = await this.axios.get('/vat/rates');
-
-    return data;
+  async getRates(options: BaseRequestOptions = {}): Promise<Record<string, VATCountryRate[]>> {
+    return await this.request<Record<string, VATCountryRate[]>>('/vat/rates', 'GET', options);
   }
 
   /**
@@ -73,14 +71,16 @@ export default class VATAPI {
    * Required API Key permission: `vat:rates:get`
    *
    * @param country The two-letter country code of the country to retrieve the rates for.
+   * @param options The request options
    * @returns The current VAT rates for the country.
    */
-  async getRatesForCountry(country: string): Promise<VATCountryRate[]> {
-    const { data } = await this.axios.get('/vat/rates', {
-      params: { country },
+  async getRatesForCountry(country: string, options: BaseRequestOptions = {}): Promise<VATCountryRate[]> {
+    return await this.request('/vat/rates', 'GET', {
+      query: {
+        country,
+      },
+      ...options,
     });
-
-    return data;
   }
 
   /**
@@ -185,3 +185,5 @@ export interface VATIDInformation {
    */
   currentRate: Record<string, number>;
 }
+
+export default new VATAPIClient();

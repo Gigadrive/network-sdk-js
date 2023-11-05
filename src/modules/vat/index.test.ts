@@ -1,12 +1,9 @@
-import MockAdapter from 'axios-mock-adapter';
-import VATAPI from './vat';
+import { mockFetch } from '../../tests/mock';
+import vat from './index';
 
 describe('VAT API', () => {
-  const vat: VATAPI = new VATAPI('API_KEY');
-  const mock = new MockAdapter(vat.axios);
-
   it('should retrieve information about a VAT ID', async () => {
-    mock.onGet('/vat/id?id=LU26375245').reply(200, [
+    mockFetch([
       {
         id: 'LU26375245',
         valid: true,
@@ -42,7 +39,7 @@ describe('VAT API', () => {
   });
 
   it('should retrieve information about multiple VAT IDs', async () => {
-    mock.onGet('/vat/id?id=IE6388047V&id=DE297753810').reply(200, [
+    mockFetch([
       {
         id: 'IE6388047V',
         valid: true,
@@ -101,7 +98,7 @@ describe('VAT API', () => {
   });
 
   it('should get the VAT rates', async () => {
-    mock.onGet('/vat/rates').reply(200, {
+    mockFetch({
       DE: [
         {
           effective_from: '0000-01-01',
@@ -199,8 +196,7 @@ describe('VAT API', () => {
   });
 
   it('should get the VAT rates of a specific country', async () => {
-    mock.reset();
-    mock.onGet('/vat/rates', { params: { country: 'DE' } }).reply(200, [
+    mockFetch([
       {
         effective_from: '0000-01-01',
         rates: {
@@ -294,67 +290,65 @@ describe('VAT API', () => {
   });
 
   it('should get the current VAT rate for a specific country', async () => {
-    mock.onGet('/vat/rates').reply(200, {
-      DE: [
-        {
-          effective_from: '0000-01-01',
-          rates: {
-            reduced: 7,
-            standard: 19,
-          },
-          exceptions: [
-            {
-              name: 'Büsingen am Hochrhein',
-              postcode: '78266',
-              standard: 0,
-            },
-            {
-              name: 'Heligoland',
-              postcode: '27498',
-              standard: 0,
-            },
-          ],
+    mockFetch([
+      {
+        effective_from: '0000-01-01',
+        rates: {
+          reduced: 7,
+          standard: 19,
         },
-        {
-          effective_from: '2020-07-01',
-          rates: {
-            reduced: 5,
-            standard: 16,
+        exceptions: [
+          {
+            name: 'Büsingen am Hochrhein',
+            postcode: '78266',
+            standard: 0,
           },
-          exceptions: [
-            {
-              name: 'Büsingen am Hochrhein',
-              postcode: '78266',
-              standard: 0,
-            },
-            {
-              name: 'Heligoland',
-              postcode: '27498',
-              standard: 0,
-            },
-          ],
-        },
-        {
-          effective_from: '2021-01-01',
-          rates: {
-            reduced: 7,
-            standard: 19,
+          {
+            name: 'Heligoland',
+            postcode: '27498',
+            standard: 0,
           },
-          exceptions: [
-            {
-              name: 'Büsingen am Hochrhein',
-              postcode: '78266',
-              standard: 0,
-            },
-            {
-              name: 'Heligoland',
-              postcode: '27498',
-              standard: 0,
-            },
-          ],
+        ],
+      },
+      {
+        effective_from: '2020-07-01',
+        rates: {
+          reduced: 5,
+          standard: 16,
         },
-      ],
-    });
+        exceptions: [
+          {
+            name: 'Büsingen am Hochrhein',
+            postcode: '78266',
+            standard: 0,
+          },
+          {
+            name: 'Heligoland',
+            postcode: '27498',
+            standard: 0,
+          },
+        ],
+      },
+      {
+        effective_from: '2021-01-01',
+        rates: {
+          reduced: 7,
+          standard: 19,
+        },
+        exceptions: [
+          {
+            name: 'Büsingen am Hochrhein',
+            postcode: '78266',
+            standard: 0,
+          },
+          {
+            name: 'Heligoland',
+            postcode: '27498',
+            standard: 0,
+          },
+        ],
+      },
+    ]);
 
     const rate = await vat.getCurrentRateForCountry('DE');
 

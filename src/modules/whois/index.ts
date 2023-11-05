@@ -1,4 +1,4 @@
-import axios, { type AxiosInstance } from 'axios';
+import { type BaseRequestOptions, HttpClient } from '../../client';
 
 /**
  * The Whois API is used to get information about a domain, such as the owner, the registrar, the nameservers, and more.
@@ -7,22 +7,12 @@ import axios, { type AxiosInstance } from 'axios';
  *
  * @see https://docs.gigadrive.network/products/whois-api
  */
-export default class WhoisAPI {
-  public readonly apiKey: string;
-  public readonly baseURL: string;
-  public readonly axios: AxiosInstance;
-
+export class WhoisAPIClient extends HttpClient {
   /**
-   * @param apiKey The API key to use for authentication.
    * @param baseURL The base URL of the API. Defaults to `https://api.gigadrive.network`.
    */
-  constructor(apiKey: string, baseURL: string = 'https://api.gigadrive.network') {
-    this.apiKey = apiKey;
-    this.baseURL = baseURL;
-
-    this.axios = axios.create({
-      baseURL: this.baseURL,
-    });
+  constructor(baseURL: string = 'https://api.gigadrive.network') {
+    super(baseURL);
   }
 
   /**
@@ -31,12 +21,11 @@ export default class WhoisAPI {
    * Required API Key permissions: `whois:domain:get`
    *
    * @param domain The domain to get information about.
+   * @param options The request options.
    * @returns The domain information.
    */
-  async getDomainInformation(domain: string): Promise<DomainInformation> {
-    const response = await this.axios.get('/whois/domain', { params: { domain } });
-
-    return response.data;
+  async getDomainInformation(domain: string, options: BaseRequestOptions = {}): Promise<DomainInformation> {
+    return await this.request('/whois/domain', 'GET', { query: { domain }, ...options });
   }
 
   /**
@@ -45,12 +34,11 @@ export default class WhoisAPI {
    * Required API Key permissions: `whois:domain:get`
    *
    * @param domain The domain to get information about.
+   * @param options The request options.
    * @returns The raw domain information.
    */
-  async getRawDomainInformation(domain: string): Promise<string> {
-    const response = await this.axios.get('/whois/domain', { params: { domain, raw: true } });
-
-    return response.data;
+  async getRawDomainInformation(domain: string, options: BaseRequestOptions = {}): Promise<string> {
+    return await this.request('/whois/domain', 'GET', { query: { domain, raw: true }, ...options });
   }
 }
 
@@ -93,3 +81,5 @@ export interface DomainWhoisAddress {
   faxExt: string | null;
   email: string | null;
 }
+
+export default new WhoisAPIClient();

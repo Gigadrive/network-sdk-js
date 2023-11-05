@@ -1,5 +1,4 @@
-import MockAdapter from 'axios-mock-adapter';
-import MCSkinHistory, {
+import mcskinhistory, {
   type ServerProfile,
   type PlayerProfile,
   type Name,
@@ -7,21 +6,19 @@ import MCSkinHistory, {
   type CapeTexture,
   type ServerPlayerHistoryEntry,
   type SkinFile,
-} from './mcskinhistory';
+} from './index';
+import { mockFetch, mockFetchError } from '../../tests/mock';
 
 describe('MCSkinHistory Data API', () => {
-  const mcskinhistory: MCSkinHistory = new MCSkinHistory('API_KEY');
-  const mock = new MockAdapter(mcskinhistory.axios);
-
   it('should be able to get a player profile', async () => {
-    mock.onGet('/mcskinhistory/player', { params: { id: 'Zeryther' } }).reply(200, {
+    mockFetch({
       id: '73b417dcd1e645d8af06895eeb5222a5',
       idFormatted: '73b417dc-d1e6-45d8-af06-895eeb5222a5',
       username: 'Zeryther',
       detectionDate: '2016-04-25T21:45:06.000Z',
     });
 
-    const player: PlayerProfile | null = await mcskinhistory.getPlayerProfile({ query: 'Zeryther' });
+    const player: PlayerProfile | null = await mcskinhistory.getPlayerProfile('Zeryther');
 
     expect(player).not.toBeNull();
 
@@ -32,21 +29,15 @@ describe('MCSkinHistory Data API', () => {
   });
 
   it('should return null if the player does not exist', async () => {
-    mock.onGet('/mcskinhistory/player', { params: { id: 'NotARealPlayer' } }).reply(404, {
-      errors: [
-        {
-          message: 'Player not found',
-        },
-      ],
-    });
+    mockFetchError('Player not found');
 
-    const player: PlayerProfile | null = await mcskinhistory.getPlayerProfile({ query: 'NotARealPlayer' });
+    const player: PlayerProfile | null = await mcskinhistory.getPlayerProfile('NotARealPlayer');
 
     expect(player).toBeNull();
   });
 
   it("should be able to get a player's name history", async () => {
-    mock.onGet('/mcskinhistory/player/names', { params: { id: 'FutabaP5' } }).reply(200, [
+    mockFetch([
       {
         name: 'SimonBecker',
       },
@@ -76,7 +67,7 @@ describe('MCSkinHistory Data API', () => {
       },
     ]);
 
-    const names: Name[] | null = await mcskinhistory.getPlayerNames({ query: 'FutabaP5' });
+    const names: Name[] | null = await mcskinhistory.getPlayerNames('FutabaP5');
 
     expect(names).not.toBeNull();
 
@@ -104,21 +95,15 @@ describe('MCSkinHistory Data API', () => {
   });
 
   it("should return null if the player's name history does not exist", async () => {
-    mock.onGet('/mcskinhistory/player/names', { params: { id: 'NotARealPlayer' } }).reply(404, {
-      errors: [
-        {
-          message: 'Player not found',
-        },
-      ],
-    });
+    mockFetchError('Player not found');
 
-    const names: Name[] | null = await mcskinhistory.getPlayerNames({ query: 'NotARealPlayer' });
+    const names: Name[] | null = await mcskinhistory.getPlayerNames('NotARealPlayer');
 
     expect(names).toBeNull();
   });
 
   it('should be able to get the skins on a player profile', async () => {
-    mock.onGet('/mcskinhistory/player/skins', { params: { id: 'Zeryther' } }).reply(200, [
+    mockFetch([
       {
         id: 21002403,
         timeAdded: '2023-01-11T11:52:28.000Z',
@@ -159,7 +144,7 @@ describe('MCSkinHistory Data API', () => {
       },
     ]);
 
-    const skins: SkinTexture[] | null = await mcskinhistory.getPlayerSkins({ query: 'Zeryther' });
+    const skins: SkinTexture[] | null = await mcskinhistory.getPlayerSkins('Zeryther');
 
     expect(skins).not.toBeNull();
 
@@ -197,21 +182,15 @@ describe('MCSkinHistory Data API', () => {
   });
 
   it('should return null for skins if the player does not exist', async () => {
-    mock.onGet('/mcskinhistory/player/skins', { params: { id: 'NotARealPlayer' } }).reply(404, {
-      errors: [
-        {
-          message: 'Player not found',
-        },
-      ],
-    });
+    mockFetchError('Player not found');
 
-    const skins: SkinTexture[] | null = await mcskinhistory.getPlayerSkins({ query: 'NotARealPlayer' });
+    const skins: SkinTexture[] | null = await mcskinhistory.getPlayerSkins('NotARealPlayer');
 
     expect(skins).toBeNull();
   });
 
   it('should be able to get the Mojang capes on a player profile', async () => {
-    mock.onGet('/mcskinhistory/player/mojang-capes', { params: { id: 'Zeryther' } }).reply(200, [
+    mockFetch([
       {
         id: 17475953,
         timeAdded: '2022-10-29T10:44:38.000Z',
@@ -248,7 +227,7 @@ describe('MCSkinHistory Data API', () => {
       },
     ]);
 
-    const capes: CapeTexture[] | null = await mcskinhistory.getPlayerMojangCapes({ query: 'Zeryther' });
+    const capes: CapeTexture[] | null = await mcskinhistory.getPlayerMojangCapes('Zeryther');
 
     expect(capes).not.toBeNull();
 
@@ -284,21 +263,15 @@ describe('MCSkinHistory Data API', () => {
   });
 
   it('should return null for Mojang capes if the player does not exist', async () => {
-    mock.onGet('/mcskinhistory/player/mojang-capes', { params: { id: 'Zeryther' } }).reply(404, {
-      errors: [
-        {
-          message: 'Player not found',
-        },
-      ],
-    });
+    mockFetchError('Player not found');
 
-    const capes: CapeTexture[] | null = await mcskinhistory.getPlayerMojangCapes({ query: 'Zeryther' });
+    const capes: CapeTexture[] | null = await mcskinhistory.getPlayerMojangCapes('Zeryther');
 
     expect(capes).toBeNull();
   });
 
   it('should be able to get the Optifine capes on a player profile', async () => {
-    mock.onGet('/mcskinhistory/player/optifine-capes', { params: { id: 'Zeryther' } }).reply(200, [
+    mockFetch([
       {
         id: 8770870,
         timeAdded: '2021-04-23T06:29:28.000Z',
@@ -335,7 +308,7 @@ describe('MCSkinHistory Data API', () => {
       },
     ]);
 
-    const capes: CapeTexture[] | null = await mcskinhistory.getPlayerOptifineCapes({ query: 'Zeryther' });
+    const capes: CapeTexture[] | null = await mcskinhistory.getPlayerOptifineCapes('Zeryther');
 
     expect(capes).not.toBeNull();
 
@@ -367,21 +340,15 @@ describe('MCSkinHistory Data API', () => {
   });
 
   it('should return null for Optifine capes if the player does not exist', async () => {
-    mock.onGet('/mcskinhistory/player/optifine-capes', { params: { id: 'Zeryther' } }).reply(404, {
-      errors: [
-        {
-          message: 'Player not found',
-        },
-      ],
-    });
+    mockFetchError('Player not found');
 
-    const capes: CapeTexture[] | null = await mcskinhistory.getPlayerOptifineCapes({ query: 'Zeryther' });
+    const capes: CapeTexture[] | null = await mcskinhistory.getPlayerOptifineCapes('Zeryther');
 
     expect(capes).toBeNull();
   });
 
   it('should be able to get the custom capes on a player profile', async () => {
-    mock.onGet('/mcskinhistory/player/custom-capes', { params: { id: 'Zeryther' } }).reply(200, [
+    mockFetch([
       {
         id: 3255103,
         timeAdded: '2019-09-23T22:55:36.000Z',
@@ -418,7 +385,7 @@ describe('MCSkinHistory Data API', () => {
       },
     ]);
 
-    const capes: CapeTexture[] | null = await mcskinhistory.getPlayerCustomCapes({ query: 'Zeryther' });
+    const capes: CapeTexture[] | null = await mcskinhistory.getPlayerCustomCapes('Zeryther');
 
     expect(capes).not.toBeNull();
 
@@ -450,21 +417,15 @@ describe('MCSkinHistory Data API', () => {
   });
 
   it('should return null for custom capes if the player does not exist', async () => {
-    mock.onGet('/mcskinhistory/player/custom-capes', { params: { id: 'NotARealPlayer' } }).reply(404, {
-      errors: [
-        {
-          message: 'Player not found',
-        },
-      ],
-    });
+    mockFetchError('Player not found');
 
-    const capes: CapeTexture[] | null = await mcskinhistory.getPlayerCustomCapes({ query: 'NotARealPlayer' });
+    const capes: CapeTexture[] | null = await mcskinhistory.getPlayerCustomCapes('NotARealPlayer');
 
     expect(capes).toBeNull();
   });
 
   it('should be able to get a server profile', async () => {
-    mock.onGet('/mcskinhistory/server', { params: { ip: 'mc.hypixel.net' } }).reply(200, {
+    mockFetch({
       ip: 'hypixel.net',
       name: 'Hypixel Network',
       votes: 0,
@@ -522,7 +483,7 @@ describe('MCSkinHistory Data API', () => {
       ],
     });
 
-    const server: ServerProfile | null = await mcskinhistory.getServerProfile({ ip: 'mc.hypixel.net' });
+    const server: ServerProfile | null = await mcskinhistory.getServerProfile('mc.hypixel.net');
 
     expect(server).not.toBeNull();
 
@@ -590,109 +551,94 @@ describe('MCSkinHistory Data API', () => {
   });
 
   it('should return null if the server does not exist', async () => {
-    mock.onGet('/mcskinhistory/server', { params: { ip: 'mc.hypixel.net' } }).reply(404, {
-      errors: [
-        {
-          message: 'Server Not Found',
-        },
-      ],
-    });
+    mockFetchError('Server not found');
 
-    const server: ServerProfile | null = await mcskinhistory.getServerProfile({ ip: 'mc.hypixel.net' });
+    const server: ServerProfile | null = await mcskinhistory.getServerProfile('mc.hypixel.net');
 
     expect(server).toBeNull();
   });
 
   it('should be able to get the historical player count data of a server', async () => {
-    mock
-      .onGet('/mcskinhistory/server/player-history', {
-        params: {
-          ip: 'hypixel.net',
-          rangeStart: '2022-12-11T20:00:00.000Z',
-          rangeEnd: '2023-02-12T19:00:00.000Z',
-        },
-      })
-      .reply(200, [
-        {
-          time: '2023-05-19 18:00:00.000000000',
-          players: 51558,
-        },
-        {
-          time: '2023-05-19 19:00:00.000000000',
-          players: 53606,
-        },
-        {
-          time: '2023-05-19 21:00:00.000000000',
-          players: 48137,
-        },
-        {
-          time: '2023-05-19 22:00:00.000000000',
-          players: 46158,
-        },
-        {
-          time: '2023-05-19 23:00:00.000000000',
-          players: 43482,
-        },
-        {
-          time: '2023-05-20 01:00:00.000000000',
-          players: 42010,
-        },
-        {
-          time: '2023-05-20 02:00:00.000000000',
-          players: 41498,
-        },
-        {
-          time: '2023-05-20 03:00:00.000000000',
-          players: 39466,
-        },
-        {
-          time: '2023-05-20 05:00:00.000000000',
-          players: 35079,
-        },
-        {
-          time: '2023-05-20 06:00:00.000000000',
-          players: 33859,
-        },
-        {
-          time: '2023-05-20 07:00:00.000000000',
-          players: 35831,
-        },
-        {
-          time: '2023-05-20 08:00:00.000000000',
-          players: 36488,
-        },
-        {
-          time: '2023-05-20 10:00:00.000000000',
-          players: 42803,
-        },
-        {
-          time: '2023-05-20 11:00:00.000000000',
-          players: 46967,
-        },
-        {
-          time: '2023-05-20 12:00:00.000000000',
-          players: 50042,
-        },
-        {
-          time: '2023-05-20 13:00:00.000000000',
-          players: 51784,
-        },
-        {
-          time: '2023-05-20 15:00:00.000000000',
-          players: 58158,
-        },
-        {
-          time: '2023-05-20 16:00:00.000000000',
-          players: 60241,
-        },
-        {
-          time: '2023-05-20 17:00:00.000000000',
-          players: 61275,
-        },
-      ]);
+    mockFetch([
+      {
+        time: '2023-05-19 18:00:00.000000000',
+        players: 51558,
+      },
+      {
+        time: '2023-05-19 19:00:00.000000000',
+        players: 53606,
+      },
+      {
+        time: '2023-05-19 21:00:00.000000000',
+        players: 48137,
+      },
+      {
+        time: '2023-05-19 22:00:00.000000000',
+        players: 46158,
+      },
+      {
+        time: '2023-05-19 23:00:00.000000000',
+        players: 43482,
+      },
+      {
+        time: '2023-05-20 01:00:00.000000000',
+        players: 42010,
+      },
+      {
+        time: '2023-05-20 02:00:00.000000000',
+        players: 41498,
+      },
+      {
+        time: '2023-05-20 03:00:00.000000000',
+        players: 39466,
+      },
+      {
+        time: '2023-05-20 05:00:00.000000000',
+        players: 35079,
+      },
+      {
+        time: '2023-05-20 06:00:00.000000000',
+        players: 33859,
+      },
+      {
+        time: '2023-05-20 07:00:00.000000000',
+        players: 35831,
+      },
+      {
+        time: '2023-05-20 08:00:00.000000000',
+        players: 36488,
+      },
+      {
+        time: '2023-05-20 10:00:00.000000000',
+        players: 42803,
+      },
+      {
+        time: '2023-05-20 11:00:00.000000000',
+        players: 46967,
+      },
+      {
+        time: '2023-05-20 12:00:00.000000000',
+        players: 50042,
+      },
+      {
+        time: '2023-05-20 13:00:00.000000000',
+        players: 51784,
+      },
+      {
+        time: '2023-05-20 15:00:00.000000000',
+        players: 58158,
+      },
+      {
+        time: '2023-05-20 16:00:00.000000000',
+        players: 60241,
+      },
+      {
+        time: '2023-05-20 17:00:00.000000000',
+        players: 61275,
+      },
+    ]);
 
-    const playerHistory: ServerPlayerHistoryEntry[] = await mcskinhistory.getServerPlayerHistory({
-      ip: 'hypixel.net',
+    const playerHistory: ServerPlayerHistoryEntry[] = await mcskinhistory.getServerPlayerHistory('hypixel.net', {
       rangeStart: new Date('2022-12-11T20:00:00.000Z'),
       rangeEnd: new Date('2023-02-12T19:00:00.000Z'),
     });
@@ -713,7 +659,7 @@ describe('MCSkinHistory Data API', () => {
   });
 
   it('should be able to get the newest skins', async () => {
-    mock.onGet('/mcskinhistory/skins', { params: { sort: 'new', limit: 3 } }).reply(200, [
+    mockFetch([
       {
         id: 9791229,
         staticIdentifier: null,
@@ -806,7 +752,7 @@ describe('MCSkinHistory Data API', () => {
   });
 
   it('should be able to get the most popular skins', async () => {
-    mock.onGet('/mcskinhistory/skins', { params: { sort: 'popular', limit: 3 } }).reply(200, [
+    mockFetch([
       {
         id: 94,
         staticIdentifier: 'steve',
