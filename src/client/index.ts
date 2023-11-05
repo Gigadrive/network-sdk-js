@@ -143,7 +143,7 @@ export interface BaseRequestOptions extends Omit<RequestInit, 'method'> {
 export type QueryParameters =
   | string
   | string[][]
-  | Record<string, string | number | boolean | null | undefined>
+  | Record<string, string | number | boolean | null | undefined | Array<string | number | boolean>>
   | URLSearchParams
   | undefined;
 

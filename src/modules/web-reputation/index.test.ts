@@ -1,12 +1,9 @@
-import WebReputationAPI, { type EmailReputation, type DomainReputation } from './web-reputation';
-import MockAdapter from 'axios-mock-adapter';
+import { mockFetch } from '../../tests/mock';
+import webReputation, { type EmailReputation, type DomainReputation } from './index';
 
 describe('Web Reputation API', () => {
-  const webReputation: WebReputationAPI = new WebReputationAPI('API_KEY');
-  const mock = new MockAdapter(webReputation.axios);
-
   it('should be able to get a domain reputation', async () => {
-    mock.onGet('/web-reputation/domain?domain=example.com').reply(200, [
+    mockFetch([
       {
         domain: 'example.com',
         status: 'good',
@@ -24,7 +21,7 @@ describe('Web Reputation API', () => {
   });
 
   it('should be able to get multiple domain reputations', async () => {
-    mock.onGet('/web-reputation/domain?domain=example.com&domain=example.org').reply(200, [
+    mockFetch([
       {
         domain: 'example.com',
         status: 'good',
@@ -55,7 +52,7 @@ describe('Web Reputation API', () => {
   });
 
   it('should be able to get an email reputation', async () => {
-    mock.onGet('/web-reputation/email?email=test@example.com').reply(200, [
+    mockFetch([
       {
         email: 'test@example.com',
         role: false,
@@ -99,7 +96,7 @@ describe('Web Reputation API', () => {
   });
 
   it('should be able to get multiple email reputations', async () => {
-    mock.onGet('/web-reputation/email?email=test@example.com&email=test2@example.org').reply(200, [
+    mockFetch([
       {
         email: 'test@example.com',
         role: false,
