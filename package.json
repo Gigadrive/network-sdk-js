@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "rimraf ./lib && tsc --project tsconfig.build.json --module commonjs --outDir dist",
+    "build": "rimraf ./dist && tsc --project tsconfig.build.json --module commonjs --outDir dist",
     "lint": "eslint --cache \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "eslint --cache --fix \"src/**/*.{js,jsx,ts,tsx}\"",
     "size": "limit-size",
@@ -14,6 +14,14 @@
   "files": [
     "dist"
   ],
+  "exports": {
+    "./client": "./dist/client/index.js",
+    "./fastcache": "./dist/modules/fastcache/index.js",
+    "./mcskinhistory": "./dist/modules/mcskinhistory/index.js",
+    "./vat": "./dist/modules/vat/index.js",
+    "./web-reputation": "./dist/modules/web-reputation/index.js",
+    "./whois": "./dist/modules/whois/index.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Gigadrive/network-sdk-js.git"
